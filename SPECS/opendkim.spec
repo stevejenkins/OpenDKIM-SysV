@@ -24,6 +24,7 @@ Requires (preun): chkconfig, initscripts
 Requires (postun): initscripts
 BuildRequires: db4-devel
 
+BuildRequires: libbsd
 BuildRequires: pkgconfig
 BuildRequires: openssl-devel
 BuildRequires: sendmail-devel
@@ -364,8 +365,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Thu May 30 2013 Steve Jenkins <steve stevejenkins com> 2.8.4-1
+* Tue Jul 23 2013 Steve Jenkins <steve stevejenkins com> 2.8.4-1
 - Updated to use newer upstream 2.8.4 source code
+- Added libbsd build requirement
 
 * Fri May 17 2013 Steve Jenkins <steve stevejenkins com> 2.8.3-2
 - Removed libmemcached support from SysV version (requires > v0.36)
