@@ -2,7 +2,7 @@
 
 Summary: A DomainKeys Identified Mail (DKIM) milter to sign and/or verify mail
 Name: opendkim
-Version: 2.8.4
+Version: 2.9.0
 Release: 1%{?dist}
 License: BSD and Sendmail
 URL: http://opendkim.org/
@@ -25,6 +25,7 @@ Requires (postun): initscripts
 BuildRequires: db4-devel
 
 BuildRequires: libbsd
+BuildRequires: libbsd-devel
 BuildRequires: pkgconfig
 BuildRequires: openssl-devel
 BuildRequires: sendmail-devel
@@ -97,7 +98,7 @@ install -m 0755 contrib/init/redhat/%{name}-default-keygen %{buildroot}%{_sbindi
 
 cat > %{buildroot}%{_sysconfdir}/%{name}.conf << 'EOF'
 ## BASIC OPENDKIM CONFIGURATION FILE
-## See %{name}.conf(5) or %{_docdir}/%{name}-%{version}/%{name}.conf.sample for more
+## See %{name}.conf(5) or %{_pkgdocdir}/%{name}.conf.sample for more
 
 ## BEFORE running OpenDKIM you must:
 
@@ -105,7 +106,7 @@ cat > %{buildroot}%{_sysconfdir}/%{name}.conf << 'EOF'
 ## - generate keys for your domain (if signing)
 ## - edit your DNS records to publish your public keys (if signing)
 
-## See %{_docdir}/%{name}-%{version}/INSTALL for detailed instructions.
+## See %{_pkgdocdir}/INSTALL for detailed instructions.
 
 ## CONFIGURATION OPTIONS
 
@@ -352,9 +353,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc LICENSE LICENSE.Sendmail README
 %{_libdir}/libopendkim.so.*
-%{_libdir}/libstrl.so.*
-%{_includedir}/strl/strl.h
-
 
 %files -n libopendkim-devel
 %defattr(-,root,root)
@@ -365,6 +363,20 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Dec 18 2013 Steve Jenkins <steve stevejenkins com> - 2.9.0-1
+- Update to use newer upstream 2.9.0 source code
+- Added libbsd-devel to BuildRequires
+- Removed listrl references from libopendkim files section (handled by libbsd-devel)
+
+* Sun Nov  3 2013 Steve Jenkins <steve stevejenkins com> - 2.8.4-4
+- Rebuild of all release packages to sync version numbers
+
+* Sun Nov  3 2013 Ville Skytta <ville.skytta@iki.fi> - 2.8.4-3
+- Fix path to docs in sample config when doc dir is unversioned (#993997).
+
+* Sat Aug 03 2013 Petr Pisar <ppisar@redhat.com> - 2.8.4-2
+- Perl 5.18 rebuild
+
 * Tue Jul 23 2013 Steve Jenkins <steve stevejenkins com> 2.8.4-1
 - Updated to use newer upstream 2.8.4 source code
 - Added libbsd build requirement
