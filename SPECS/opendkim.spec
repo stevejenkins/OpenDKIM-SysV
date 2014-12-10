@@ -2,8 +2,8 @@
 
 Summary: A DomainKeys Identified Mail (DKIM) milter to sign and/or verify mail
 Name: opendkim
-Version: 2.9.2
-Release: 2%{?dist}
+Version: 2.10.0
+Release: 1%{?dist}
 License: BSD and Sendmail
 URL: http://opendkim.org/
 Group: System Environment/Daemons
@@ -16,7 +16,6 @@ Requires (pre): shadow-utils
 #Requires (postun): systemd-units
 #Requires (post): systemd-sysv
 #BuildRequires: libdb-devel
-#BuildRequires: libmemcached-devel
 
 # Uncomment for SystemV version
 Requires (post): chkconfig
@@ -24,18 +23,18 @@ Requires (preun): chkconfig, initscripts
 Requires (postun): initscripts
 BuildRequires: db4-devel
 
+BuildRequires: libmemcached-devel
 BuildRequires: libbsd
 BuildRequires: libbsd-devel
 BuildRequires: pkgconfig
 BuildRequires: openssl-devel
 BuildRequires: sendmail-devel
-BuildRequires: unbound-devel
 
 Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
-Patch0: %{name}.keygen-permissions.patch
-Patch1: %{name}.autocreate-keys-no.patch
-Patch2: %{name}.systemd-no-default-genkey.patch
+# Patch0: %{name}.patchname.patch
+Patch0: %{name}.default-keygen-3.patch
+Patch1: %{name}.init.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -81,10 +80,9 @@ required for developing applications against libopendkim.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
-%configure --with-unbound --with-db
+%configure --with-libmemcached --with-db
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
@@ -248,6 +246,86 @@ cat > %{buildroot}%{_sysconfdir}/%{name}/TrustedHosts << 'EOF'
 #192.168.1.0/24
 EOF
 
+cat > README.fedora << 'EOF'
+#####################################
+#FEDORA-SPECIFIC README FOR OPENDKIM#
+#####################################
+Last updated: Dec 9, 2014 by Steve Jenkins (steve@stevejenkins.com)
+
+Generating keys for OpenDKIM
+============================
+After installing the opendkim package, you must generate a pair of keys (public and private) before
+attempting to start the opendkim service.
+
+A valid private key must exist in the location expected by /etc/opendkim.conf before the service will start.
+
+A matching public key must be included in your domain's DNS records before remote systems can validate
+your outgoing mail's DKIM signature.
+
+
+Generating Keys Automatically
+=============================
+To automatically create a pair of default keys for the local domain, do:
+
+% sudo /usr/sbin/opendkim-default-keygen
+
+The default keygen script will attempt to fetch the local domain name, generate a private and public key for
+the domain, then save them in /etc/opendkim/keys as default.private and default.txt with the proper
+ownership and permissions.
+
+NOTE: The default key generation script MUST be run by a privileged user (or root). Otherwise, the resulting
+private key ownership and permissions will not be correct.
+
+
+Generating Keys Manually
+========================
+A privileged user (or root) can manually generate a set of keys by doing the following:
+
+1) Create a directory to store the new keys:
+
+% sudo mkdir /etc/opendkim/keys/example.com
+
+2) Generate keys in that directory for a specific domain name and selector:
+
+% sudo /usr/sbin/opendkim-genkey -D /etc/opendkim/keys/example.com/ -d example.com -s default
+
+3) Set the proper ownership for the directory and private key:
+
+% sudo chown -R root:opendkim /etc/opendkim/keys/example.com
+
+4) Set secure permissions for the private key:
+
+% sudo chmod 640 /etc/opendkim/keys/example.com/default.private
+
+5) Set standard permissions for the public key:
+
+% sudo chmod 644 /etc/opendkim/keys/example.com/default.txt
+
+
+Updating Key Location(s) in Configuration Files
+===============================================
+If you run the opendkim-default-keygen script, the default keys will be saved in /etc/opendkim/keys as
+default.private and default.txt, which is the location expected by the default /etc/opendkim.conf file.
+
+If you manually generate your own keys, you must update the key location and name in /etc/opendkim.conf
+before attempting to start the opendkim service.
+
+
+Additional Configuration Help
+=============================
+For help configuring your MTA (Postfix, Sendmail, etc.) with OpenDKIM, setting up DNS records with your
+public DKIM key, as well as instructions on configuring OpenDKIM to sign outgoing mail for multiple
+domains, follow the how-to at:
+
+http://wp.me/p1iGgP-ou
+
+Official documentation for OpenDKIM is available at http://opendkim.org/
+
+OpenDKIM mailing lists are available at http://lists.opendkim.org/
+
+###
+EOF
+
 install -p -d %{buildroot}%{_sysconfdir}/tmpfiles.d
 cat > %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf <<'EOF'
 D %{_localstatedir}/run/%{name} 0700 %{name} %{name} -
@@ -333,7 +411,7 @@ rm -rf %{buildroot}
 %doc contrib/convert/convert_keylist.sh %{name}/*.sample
 %doc %{name}/%{name}.conf.simple-verify %{name}/%{name}.conf.simple
 %doc %{name}/README contrib/lua/*.lua
-%doc contrib/stats/README.%{name}-reportstats
+%doc README.fedora
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
 %config(noreplace) %attr(640,root,%{name}) %{_sysconfdir}/%{name}/SigningTable
@@ -347,7 +425,7 @@ rm -rf %{buildroot}
 %dir %attr(-,root,%{name}) %{_sysconfdir}/%{name}
 %dir %attr(750,root,%{name}) %{_sysconfdir}/%{name}/keys
 #%attr(0644,root,root) %{_unitdir}/%{name}.service
-#%attr(0755,root,root) %{_sbindir}/%{name}-default-keygen
+%attr(0755,root,root) %{_sbindir}/%{name}-default-keygen
 
 #%files sysvinit
 #%defattr(-,root,root)
@@ -367,6 +445,15 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Dec 09 2014 Steve Jenkins <steve@stevejenkins.com> - 2.10.0-1
+- Updated to use newer upstream 2.10.0 source code
+Removed unbound compile option due to orphaned upstream dependency
+- Removed AUTOCREATE_DKIM_KEYS option
+- Added README.fedora with basic key generation and config instructions
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.9.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Mon Aug 4 2014 Steve Jenkins <steve@stevejenkins.com> - 2.9.2-2
 - Change file ownerships/permissions to fix https://bugzilla.redhat.com/show_bug.cgi?id=891292
 - Default keys no longer created on startup. Privileged user must run opendkim-default-keygen or create manually (after install)
