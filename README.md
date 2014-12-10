@@ -1,11 +1,11 @@
-OpenDKIM-Fedora
+OpenDKIM-Fedora (SysV)
 ===============
 Current release version: 2.9.0-2
 Current development version: 2.10.0-1
 
 This git repo contains:
 
-- **SPECS/opendkim.spec** - SystemV-compatible spec file for the OpenDKIM package I maintain in Fedora & EPEL (https://admin.fedoraproject.org/pkgdb/acls/name/opendkim/)
+- **SPECS/opendkim.spec** - SysV-compatible spec file for the OpenDKIM package I maintain in Fedora & EPEL (https://admin.fedoraproject.org/pkgdb/acls/name/opendkim/)
 
 - **PATCHES** - patches for the spec file, as needed, depending on version
 
