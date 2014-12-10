@@ -1,4 +1,4 @@
-OpenDKIM-Fedora (SysV)
+OpenDKIM-SysV
 ===============
 Current release version: 2.9.0-2
 Current development version: 2.10.0-1
