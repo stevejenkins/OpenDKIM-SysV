@@ -16,6 +16,7 @@ Requires (pre): shadow-utils
 #Requires (postun): systemd-units
 #Requires (post): systemd-sysv
 #BuildRequires: libdb-devel
+#BuildRequires: libmemcached-devel
 
 # Uncomment for SystemV version
 Requires (post): chkconfig
@@ -24,7 +25,6 @@ Requires (postun): initscripts
 BuildRequires: db4-devel
 
 # Required for all versions
-BuildRequires: libmemcached-devel
 BuildRequires: libbsd
 BuildRequires: libbsd-devel
 BuildRequires: pkgconfig
@@ -80,7 +80,7 @@ required for developing applications against libopendkim.
 #%patch0 -p1
 
 %build
-%configure --with-libmemcached --with-db
+%configure --with-db
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
