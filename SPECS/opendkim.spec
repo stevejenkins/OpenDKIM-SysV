@@ -448,7 +448,7 @@ rm -rf %{buildroot}
 
 * Tue Dec 09 2014 Steve Jenkins <steve@stevejenkins.com> - 2.10.0-1
 - Updated to use newer upstream 2.10.0 source code
-Removed unbound compile option due to orphaned upstream dependency
+- Removed unbound compile option due to orphaned upstream dependency
 - Removed AUTOCREATE_DKIM_KEYS option
 - Added README.fedora with basic key generation and config instructions
 
