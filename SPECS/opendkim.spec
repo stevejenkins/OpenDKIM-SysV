@@ -2,7 +2,7 @@
 
 Summary: A DomainKeys Identified Mail (DKIM) milter to sign and/or verify mail
 Name: opendkim
-Version: 2.10.0
+Version: 2.10.1
 Release: 1%{?dist}
 License: BSD and Sendmail
 URL: http://opendkim.org/
@@ -23,6 +23,7 @@ Requires (preun): chkconfig, initscripts
 Requires (postun): initscripts
 BuildRequires: db4-devel
 
+# Required for all versions
 BuildRequires: libmemcached-devel
 BuildRequires: libbsd
 BuildRequires: libbsd-devel
@@ -33,8 +34,6 @@ BuildRequires: sendmail-devel
 Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 
 # Patch0: %{name}.patchname.patch
-Patch0: %{name}.default-keygen-3.patch
-Patch1: %{name}.init.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -78,8 +77,7 @@ required for developing applications against libopendkim.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
+#%patch0 -p1
 
 %build
 %configure --with-libmemcached --with-db
@@ -250,11 +248,11 @@ cat > README.fedora << 'EOF'
 #####################################
 #FEDORA-SPECIFIC README FOR OPENDKIM#
 #####################################
-Last updated: Dec 9, 2014 by Steve Jenkins (steve@stevejenkins.com)
+Last updated: Mar 3, 2015 by Steve Jenkins (steve@stevejenkins.com)
 
 Generating keys for OpenDKIM
 ============================
-After installing the opendkim package, you must generate a pair of keys (public and private) before
+After installing the opendkim package, you MUST generate a pair of keys (public and private) before
 attempting to start the opendkim service.
 
 A valid private key must exist in the location expected by /etc/opendkim.conf before the service will start.
@@ -414,16 +412,16 @@ rm -rf %{buildroot}
 %doc README.fedora
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
-%config(noreplace) %attr(640,root,%{name}) %{_sysconfdir}/%{name}/SigningTable
-%config(noreplace) %attr(640,root,%{name}) %{_sysconfdir}/%{name}/KeyTable
-%config(noreplace) %attr(640,root,%{name}) %{_sysconfdir}/%{name}/TrustedHosts
+%config(noreplace) %attr(640,%{name},%{name}) %{_sysconfdir}/%{name}/SigningTable
+%config(noreplace) %attr(640,%{name},%{name}) %{_sysconfdir}/%{name}/KeyTable
+%config(noreplace) %attr(640,%{name},%{name}) %{_sysconfdir}/%{name}/TrustedHosts
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_sbindir}/*
 %{_mandir}/*/*
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/spool/%{name}
 %dir %attr(-,%{name},%{name}) %{_localstatedir}/run/%{name}
 %dir %attr(-,root,%{name}) %{_sysconfdir}/%{name}
-%dir %attr(750,root,%{name}) %{_sysconfdir}/%{name}/keys
+%dir %attr(750,%name,%{name}) %{_sysconfdir}/%{name}/keys
 #%attr(0644,root,root) %{_unitdir}/%{name}.service
 %attr(0755,root,root) %{_sbindir}/%{name}-default-keygen
 
@@ -445,6 +443,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Mar 03 2015 Steve Jenkins <steve@stevejenkins.com> - 2.10.1-1
+- Updated to use newer upstream 2.10.1 source code
+
 * Tue Dec 09 2014 Steve Jenkins <steve@stevejenkins.com> - 2.10.0-1
 - Updated to use newer upstream 2.10.0 source code
 Removed unbound compile option due to orphaned upstream dependency
