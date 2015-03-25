@@ -1,5 +1,5 @@
---- /usr/local/src/opendkim-2.10.1/contrib/init/redhat/opendkim.in	2012-10-30 11:12:46.000000000 -0700
-+++ opendkim.in	2015-03-24 16:33:45.905687422 -0700
+--- opendkim-2.10.0/contrib/init/redhat/opendkim.in.orig	2014-12-09 15:44:54.277983029 -0800
++++ opendkim-2.10.0/contrib/init/redhat/opendkim.in	2014-12-09 15:53:42.929067179 -0800
 @@ -17,8 +17,8 @@
  #		that can plug in to any milter-aware MTA.
  ### END INIT INFO
@@ -7,19 +7,30 @@
 -# OpenDKIM startup script v1.8 for RHEL/CentOS/Fedora
 -# by Steve Jenkins (SteveJenkins.com) - 10-29-2012
 +# OpenDKIM startup script v2.0 for RHEL/CentOS/Fedora
-+# by Steve Jenkins (SteveJenkins.com) - 03-24-2015
++# by Steve Jenkins (SteveJenkins.com) - 12-09-2014
  # Based on a script by Andrew Colin Kissa (TopDog) for dkim-milter - 05-28-2009
  # - Additional functionality to prevent multiple instances and a reload
  #   handler by Chris LaJoie - 01-11-2011
-@@ -31,6 +31,7 @@
+@@ -31,6 +31,9 @@
  # - Updated success and warning outputs for default key generation - 09-20-2011
  # - Changed default key directory ownership and permissions - 09-22-2011
  # - Updated opendkim-genkey location to /usr/sbin - 10-29-2012
-+# - Removed default keygen on startup - 03-24-2015
++# - No longer automatically creates default keys on startup (user must now manually
++#   generate keys as privileged user after install) - 08-04-2014
++# - Removed uneeded code from automatic key creation - 12-09-2014
  
  . /etc/rc.d/init.d/functions
  
-@@ -52,33 +53,7 @@
+@@ -43,42 +46,12 @@
+ DAEMON=@sbindir@/$prog
+ CONF_FILE=@sysconfdir@/$prog.conf
+ PID_FILE=@localstatedir@/run/$prog/$prog.pid
+-KEYGEN=@exec_prefix@/sbin/opendkim-genkey
+-DKIM_KEYDIR=@sysconfdir@/$prog/keys
+-DKIM_SELECTOR=default
+-AUTOCREATE_DKIM_KEYS=yes
+ 
+ if [ -f /etc/sysconfig/opendkim ]; then
  	. /etc/sysconfig/opendkim
  fi
  
