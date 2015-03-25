@@ -1,14 +1,8 @@
 OpenDKIM-SysV
 ===============
-This git repo contains:
+**NOTE: As of 2.10.1-4, the systemd and SystemV versions of this spec file have been combined, and this repo has been abandoned.**
 
-- **SPECS/opendkim.spec** - SysV-compatible spec file for the OpenDKIM package I maintain in Fedora & EPEL (https://admin.fedoraproject.org/pkgdb/acls/name/opendkim/)
-
-- **PATCHES** - patches for the spec file, as needed, depending on version
-
-**CONTRIBUTORS:** Please do pull requests in the "develop" branch only. The "master" branch is just for release versions. Thanks!
-
-For the systemd-compatible version of this repo, visit http://github.com/stevejenkins/OpenDKIM-Fedora/
+**All current activity for this project is in the OpenDKIM-Fedora repo at https://github.com/stevejenkins/OpenDKIM-Fedora**
 
 For official source code and documentation, please visit http://opendkim.org/
 
