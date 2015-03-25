@@ -1,6 +1,6 @@
 OpenDKIM-SysV
 ===============
-**NOTE: As of 2.10.1-4, the systemd and SystemV versions of this spec file have been combined, and this repo has been abandoned.**
+**NOTE: As of 2.10.1-5, the systemd and SystemV versions of this spec file have been combined, and this repo has been abandoned.**
 
 **All current activity for this project is in the OpenDKIM-Fedora repo at https://github.com/stevejenkins/OpenDKIM-Fedora**
 
