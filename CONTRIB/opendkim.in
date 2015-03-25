@@ -30,8 +30,9 @@
 # - Changed default stop priority - 09-19-2011
 # - Updated success and warning outputs for default key generation - 09-20-2011
 # - Changed default key directory ownership and permissions - 09-22-2011
-# - Updated opendkim-genkey location to /usr/sbin - 10-29-2012
-# - Removed default keygen on startup - 03-24-2015
+# - No longer automatically creates default keys on startup (user must now manually
+#   generate keys as privileged user after install) - 08-04-2014
+# - Removed uneeded code from automatic key creation - 12-09-2014
 
 . /etc/rc.d/init.d/functions
 
@@ -44,10 +45,6 @@ prog="opendkim"
 DAEMON=@sbindir@/$prog
 CONF_FILE=@sysconfdir@/$prog.conf
 PID_FILE=@localstatedir@/run/$prog/$prog.pid
-KEYGEN=@exec_prefix@/sbin/opendkim-genkey
-DKIM_KEYDIR=@sysconfdir@/$prog/keys
-DKIM_SELECTOR=default
-AUTOCREATE_DKIM_KEYS=yes
 
 if [ -f /etc/sysconfig/opendkim ]; then
 	. /etc/sysconfig/opendkim
